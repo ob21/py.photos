@@ -40,10 +40,12 @@ for p in Path(input_dir).glob('./**/*'):
     if p.is_file():
         ext = os.path.splitext(p)[1]
         if ext == ".JPG":
-            print("is a file :" + str(p))
+            print("is a file : " + str(p))
             with open('.\\' + str(p), 'rb') as my_picture:
                 tags = exifread.process_file(my_picture)
                 print('try to get exif data for ' + '.\\' + str(p))
+                print("tags : "+str(tags))
+                print(str(tags.get('EXIF DateTimeOriginal')))
                 new_name = os.path.basename(p)
                 try:
                     picture_date = datetime.strptime(str(
@@ -56,10 +58,11 @@ for p in Path(input_dir).glob('./**/*'):
                 except ValueError:
                     picture_date = None
                     print("No value for %s" % p)
-            print(output_dir + "\\" + new_name + ext)
+            print(output_dir + "\\" + new_name)
             # os.rename(p, os.path.dirname(p) + new_name)
         else:
             print("is not a .JPG file : " + ext)
+        break
 
 # Get the date of the photo
 # filename = '.\\input\\593APPLE\\IMG_2002.JPG'
