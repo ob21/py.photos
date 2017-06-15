@@ -68,11 +68,14 @@ for p in Path(input_dir).glob('./**/*'):
             print(newpath)
             if not os.path.exists(output_dir + "\\" + str(year) + "\\" + str(month) + "\\"):
                 os.makedirs(output_dir + "\\" + str(year) + "\\" + str(month) + "\\")
-            print("simple rename = " + os.path.dirname(p) + "\\" + newfile)
             os.rename(p, newpath)
         elif ext in vid_types:
             print("is a VIDEO file : " + ext)
-            print("do nothing")
+            newpath = output_dir + "\\videos\\" + os.path.basename(p)
+            print(newpath)
+            if not os.path.exists(output_dir + "\\videos\\"):
+                os.makedirs(output_dir + "\\videos\\")
+            os.rename(p, newpath)
         else:
             print("is another file : " + ext)
             print("do nothing")
