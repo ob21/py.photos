@@ -4,6 +4,7 @@ import logging
 from pathlib import Path
 import exifread
 from datetime import datetime
+from datetime import date
 from optparse import OptionParser
 
 logging.basicConfig(filename='photos.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s', filemode='w')
@@ -39,41 +40,40 @@ for p in Path(input_dir).glob('./**/*'):
     print(p)
     if p.is_file():
         ext = os.path.splitext(p)[1]
-        if ext == ".JPG":
-            print("is a file : " + str(p))
+        img_types = [".JPG", ".JPEG", ".PNG", ".GIF"]
+        vid_types = [".MOV", ".MP4", ".MPG", ".MPEG", ".AVI"]
+        if ext in img_types:
+            print("is an IMAGE file : " + str(p))
             with open('.\\' + str(p), 'rb') as my_picture:
                 tags = exifread.process_file(my_picture)
                 print('try to get exif data for ' + '.\\' + str(p))
                 print("tags : "+str(tags))
-                print(str(tags.get('EXIF DateTimeOriginal')))
-                new_name = os.path.basename(p)
+                # print(str(tags.get('EXIF DateTimeOriginal')))
                 try:
-                    picture_date = datetime.strptime(str(
-                        tags.get('EXIF DateTimeOriginal')),
-                        '%Y:%m:%d %H:%M:%S')
-                    new_name = datetime.strptime(str(
-                        tags.get('EXIF DateTimeOriginal')),
-                        '%Y_%m_%d_'+os.path.basename(p))
-                    print(picture_date)
+                    date = datetime.strptime(str(
+                            tags.get('EXIF DateTimeOriginal')),
+                            '%Y:%m:%d %H:%M:%S')
                 except ValueError:
-                    picture_date = None
-                    print("No value for %s" % p)
-            print(output_dir + "\\" + new_name)
-            # os.rename(p, os.path.dirname(p) + new_name)
+                    date = date.today()
+                print("date = " + str(date))
+                year = date.year
+                print("year = " + str(year))
+                month = date.month
+                print("month = " + str(month))
+            file = os.path.basename(p)
+            print(file)
+            newfile = file.replace("593APPLE", "")
+            print("newfile = " + newfile)
+            newpath = output_dir + "\\" + str(year) + "\\" + str(month) + "\\" + newfile
+            print(newpath)
+            if not os.path.exists(output_dir + "\\" + str(year) + "\\" + str(month) + "\\"):
+                os.makedirs(output_dir + "\\" + str(year) + "\\" + str(month) + "\\")
+            print("simple rename = " + os.path.dirname(p) + "\\" + newfile)
+            os.rename(p, newpath)
+        elif ext in vid_types:
+            print("is a VIDEO file : " + ext)
+            print("do nothing")
         else:
-            print("is not a .JPG file : " + ext)
-        break
-
-# Get the date of the photo
-# filename = '.\\input\\593APPLE\\IMG_2002.JPG'
-# with open(filename, 'rb') as my_picture:
-#     tags = exifread.process_file(my_picture)
-#     print('try to get exif data for '+filename)
-#     try:
-#         picture_date = datetime.strptime(str(
-#             tags.get('EXIF DateTimeOriginal')),
-#             '%Y:%m:%d %H:%M:%S')
-#         print(picture_date)
-#     except ValueError:
-#         picture_date = None
-#         print("No value for %s" % filename)
+            print("is another file : " + ext)
+            print("do nothing")
+        # break
