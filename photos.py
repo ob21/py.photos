@@ -6,6 +6,9 @@ import exifread
 from datetime import datetime
 from datetime import date
 from optparse import OptionParser
+from pymediainfo import MediaInfo
+
+# Needs Mediainfo dll win32 (.exe installer included in the project)
 
 logging.basicConfig(filename='photos.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s', filemode='w')
 logging.info('Photos.py logs')
@@ -62,20 +65,46 @@ for p in Path(input_dir).glob('./**/*'):
                 print("month = " + str(month))
             file = os.path.basename(p)
             print(file)
-            newfile = file.replace("593APPLE", "")
-            print("newfile = " + newfile)
-            newpath = output_dir + "\\" + str(year) + "\\" + str(month) + "\\" + newfile
+            # newfile = file.replace("593APPLE", "")
+            # print("newfile = " + newfile)
+            newpath = output_dir + "\\" + str(year) + "\\" + str(month) + "\\" + file
             print(newpath)
             if not os.path.exists(output_dir + "\\" + str(year) + "\\" + str(month) + "\\"):
                 os.makedirs(output_dir + "\\" + str(year) + "\\" + str(month) + "\\")
             os.rename(p, newpath)
         elif ext in vid_types:
             print("is a VIDEO file : " + ext)
-            newpath = output_dir + "\\videos\\" + os.path.basename(p)
-            print(newpath)
-            if not os.path.exists(output_dir + "\\videos\\"):
-                os.makedirs(output_dir + "\\videos\\")
-            os.rename(p, newpath)
+            year = None
+            month = None
+            if ext == ".MOV":
+                media_info = MediaInfo.parse(str(p))
+                found = 0
+                for track in media_info.tracks:
+                    # print(track)
+                    if track.track_type == 'General':
+                        print(track.encoded_date)
+                        # print(track.tagged_date)
+                        date = datetime.strptime(track.encoded_date, 'UTC %Y-%m-%d %H:%M:%S')
+                        year = date.year
+                        month = date.month
+                        # print(year)
+                        # print(month)
+                        found = 1
+                # print(found)
+                if found == 1:
+                    newpath = output_dir + "\\videos\\" + str(year) + "\\" + str(month) + "\\"
+                    # print("year is not none")
+                else:
+                    newpath = output_dir + "\\videos\\"
+            else:
+                newpath = output_dir + "\\videos\\"
+            print("newpath = " + newpath)
+            if not os.path.exists(newpath):
+                os.makedirs(newpath)
+            try:
+                os.rename(p, newpath + os.path.basename(p))
+            except FileExistsError:
+                print("Cannot override existing file : " + newpath + os.path.basename(p))
         else:
             print("is another file : " + ext)
             print("do nothing")
