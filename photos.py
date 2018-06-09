@@ -70,7 +70,7 @@ for p in Path(input_dir).glob('./**/*'):
                 #print("month = " + str(month))
             file = os.path.basename(p)
             #print(file)
-            newfile = file.replace("593APPLE", "")
+            #newfile = file.replace("593APPLE", "")
             newfile = file_prefix + "_" + newfile
             print("newfile = " + newfile)
             newpath = output_dir + "\\" + str(year) + "\\" + str(month) + "\\" + newfile
@@ -81,11 +81,11 @@ for p in Path(input_dir).glob('./**/*'):
         elif ext in vid_types:
             #print("is a VIDEO file : " + ext)
             file = os.path.basename(p)
-            newpath = output_dir + "\\videos\\" + file
+            newpath = output_dir + "\\videos\\" + file_prefix + "_" + file
             i=0
             while os.path.exists(newpath):
                 i = i + 1
-                newpath = output_dir + "\\videos\\" + str(i) + "_" + file 
+                newpath = output_dir + "\\videos\\" + file_prefix + "_" + str(i) + "_" + file 
             print(newpath)
             if not os.path.exists(output_dir + "\\videos\\"):
                 os.makedirs(output_dir + "\\videos\\")
