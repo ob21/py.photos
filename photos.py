@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 import os
+from shutil import copyfile
 import logging
 from pathlib import Path
 import exifread
@@ -24,7 +25,7 @@ parser.add_option("-v", "--verbose",
 
 print("input dir = " + str(options.input_dir))
 print("output dir = " + str(options.output_dir))
-print("prefix file = " + str(options.file_prefix))
+print("prefix = " + str(options.prefix))
 
 input_dir = "input"
 output_dir = "output"
@@ -34,14 +35,14 @@ if options.input_dir is not None:
 if options.output_dir is not None:
     output_dir = str(options.output_dir)
 if options.file_prefix is not None:
-    file_prefix = str(options.file_prefix)
+    prefix = str(options.prefix)
 
 print("input dir is " + input_dir)
 logging.info("input dir is " + input_dir)
 print("output dir is " + output_dir)
 logging.info("output dir is " + output_dir)
 print("prefix is " + file_prefix)
-logging.info("prefix is " + file_prefix)
+logging.info("prefix is " + prefix)
 
 for p in Path(input_dir).glob('./**/*'):
     #print()
@@ -70,14 +71,18 @@ for p in Path(input_dir).glob('./**/*'):
                 #print("month = " + str(month))
             file = os.path.basename(p)
             #print(file)
-            #newfile = file.replace("593APPLE", "")
-            newfile = file_prefix + "_" + newfile
+            newfile = prefix + "_" + file
             print("newfile = " + newfile)
             newpath = output_dir + "\\" + str(year) + "\\" + str(month) + "\\" + newfile
+            i=0
+            while os.path.exists(newpath):
+                i = i + 1
+                newpath = output_dir + "\\" + str(year) + "\\" + str(month) + "\\" + str(i) + "_" + newfile
             print(newpath)
             if not os.path.exists(output_dir + "\\" + str(year) + "\\" + str(month) + "\\"):
                 os.makedirs(output_dir + "\\" + str(year) + "\\" + str(month) + "\\")
-            os.rename(p, newpath)
+            #os.rename(p, newpath)
+            copyfile(p, newpath)
         elif ext in vid_types:
             #print("is a VIDEO file : " + ext)
             file = os.path.basename(p)
@@ -89,7 +94,8 @@ for p in Path(input_dir).glob('./**/*'):
             print(newpath)
             if not os.path.exists(output_dir + "\\videos\\"):
                 os.makedirs(output_dir + "\\videos\\")
-            os.rename(p, newpath)
+            #os.rename(p, newpath)
+            copyfile(p, newpath)
         else:
             #print("is another file : " + ext)
             print("do nothing")
