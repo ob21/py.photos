@@ -9,8 +9,8 @@ from datetime import datetime
 from datetime import date
 from optparse import OptionParser
 
-logging.basicConfig(filename='photos.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s', filemode='w')
-logging.info('Photos.py logs')
+logging.basicConfig(filename='sortphotos.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s', filemode='w')
+logging.info('sortphotos.py logs')
 
 parser = OptionParser()
 parser.add_option("-i", "--input", dest="input_dir",
